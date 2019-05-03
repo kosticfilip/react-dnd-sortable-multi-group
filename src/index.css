@@ -6,9 +6,43 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  padding-bottom: 200px;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+h2 {
+  margin: 100px 0 50px;
+}
+
+.files-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 22%);
+  justify-content: space-between;
+  grid-gap: 30px;
+  width: 800px;
+  margin: auto;
+}
+
+.card-drag {
+  position: relative;
+}
+.card-file {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  height: 120px;
+  background: rgb(238, 238, 238);
+  position: relative;
+}
+
+.drag-separator {
+  position: absolute;
+  width: 10px;
+  height: 100%;
+  left: -10px;
+  background: greenyellow;
+  visibility: hidden;
 }
