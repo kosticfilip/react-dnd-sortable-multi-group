@@ -4,6 +4,8 @@ const Types = {
   FILE: "file"
 };
 
+// COMPONENT NOT USED ATM *****************
+
 const fileTarget = {
   hover(props, monitor, component) {
     console.log(monitor);
