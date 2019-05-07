@@ -27,15 +27,23 @@ h2 {
   margin: auto;
 }
 
-.card-drag {
+.draggedItem {
+  opacity: 0.3;
+}
+
+.card-file {
+  padding: 1rem;
+  border-radius: 8px;
+  height: 180px;
+  background: rgb(238, 238, 238);
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
   position: relative;
 }
-.card-file {
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  height: 120px;
-  background: rgb(238, 238, 238);
-  position: relative;
+
+.card-file h4 {
+  margin-top: 0;
 }
 
 .drag-separator {

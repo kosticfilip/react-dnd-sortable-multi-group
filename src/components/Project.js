@@ -1,14 +1,11 @@
 import React, { Component } from "react";
-import File from "./File.js";
-import HTML5Backend from "react-dnd-html5-backend";
+import DragItem from "./DragItem.js";
 import { DragDropContext } from "react-dnd";
+import MultiBackend from "react-dnd-multi-backend";
+import HTML5toTouch from "react-dnd-multi-backend/lib/HTML5toTouch";
 import produce from "immer";
-import posed, { PoseGroup } from "react-pose";
+import { Flipper, Flipped } from "react-flip-toolkit";
 import arrayMove from "array-move";
-const Item = posed.div({
-  enter: { opacity: 1 },
-  exit: { opacity: 0 }
-});
 
 class Project extends Component {
   constructor(props) {
@@ -52,60 +49,70 @@ class Project extends Component {
     };
   }
 
-  moveCard = (dragIndex, hoverIndex, dragGroupIndex, targetGroupIndex) => {
-    let nextState;
-    // Same Group - just reorder
-    if (dragGroupIndex === targetGroupIndex) {
-      nextState = produce(this.state, draft => {
-        draft.fileGroups[dragGroupIndex].files = arrayMove(
-          draft.fileGroups[dragGroupIndex].files,
-          dragIndex,
-          hoverIndex
-        );
-      });
-
-      this.setState(nextState);
+  moveCard = (dragIndex, hoverIndex, dragGroupIndex, hoverGroupIndex) => {
+    // Same group - just reorder
+    if (dragGroupIndex === hoverGroupIndex) {
+      this.setState(
+        produce(this.state, draft => {
+          draft.fileGroups[dragGroupIndex].files = arrayMove(
+            draft.fileGroups[dragGroupIndex].files,
+            dragIndex,
+            hoverIndex
+          );
+        })
+      );
     } else {
       let dragCard = this.state.fileGroups[dragGroupIndex].files[dragIndex];
-      if (dragCard !== undefined) {
-        nextState = produce(this.state, draft => {
+      this.setState(
+        produce(this.state, draft => {
+          // Remove item from group where it was innitaly
           draft.fileGroups[dragGroupIndex].files.splice(dragIndex, 1);
-          draft.fileGroups[targetGroupIndex].files.splice(
+
+          // Add to another group
+          draft.fileGroups[hoverGroupIndex].files.splice(
             hoverIndex,
             0,
             dragCard
           );
-        });
-        this.setState(nextState);
-      }
+        })
+      );
     }
   };
   render() {
-    let projectData;
+    let projectData,
+      flipId = "";
     const { fileGroups } = this.state;
+
+    fileGroups.forEach(fileGroup => {
+      flipId += fileGroup.files.map(x => x.id).join("");
+    });
 
     projectData = fileGroups.map((fileGroup, groupIndex) => (
       <div key={fileGroup.groupId}>
         <h2>{fileGroup.name}</h2>
         <div className="files-container">
-          <PoseGroup animateOnMount={true}>
-            {fileGroup.files.map((file, index) => (
-              <Item className="card-drag" key={file.id} data-key={file.id}>
-                <File
+          {fileGroup.files.map((file, index) => (
+            <Flipped key={file.id} flipId={file.id}>
+              <div>
+                <DragItem
                   file={file}
                   key={file.id}
                   index={index}
                   group={groupIndex}
                   moveCard={this.moveCard}
                 />
-              </Item>
-            ))}
-          </PoseGroup>
+              </div>
+            </Flipped>
+          ))}
         </div>
       </div>
     ));
 
-    return projectData;
+    return (
+      <Flipper flipKey={flipId} spring="stiff">
+        {projectData}
+      </Flipper>
+    );
   }
 }
-export default DragDropContext(HTML5Backend)(Project);
+export default DragDropContext(MultiBackend(HTML5toTouch))(Project);

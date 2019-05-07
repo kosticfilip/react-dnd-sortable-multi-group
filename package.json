@@ -6,12 +6,13 @@
     "array-move": "^2.1.0",
     "immer": "^3.1.1",
     "immutability-helper": "^3.0.0",
-    "lodash": "^4.17.11",
     "react": "^16.8.6",
     "react-dnd": "^7.4.5",
     "react-dnd-html5-backend": "^7.4.4",
+    "react-dnd-multi-backend": "^3.2.1",
+    "react-dnd-touch-backend": "^0.8.1",
     "react-dom": "^16.8.6",
-    "react-pose": "^4.0.8",
+    "react-flip-toolkit": "^6.5.9",
     "react-scripts": "3.0.0"
   },
   "scripts": {

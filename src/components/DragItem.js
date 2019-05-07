@@ -1,5 +1,6 @@
 import React, { useImperativeHandle, useRef } from "react";
 import { DragSource, DropTarget } from "react-dnd";
+import Card from "./Card";
 
 // Drag sources and drop targets only interact
 // if they have the same string type.
@@ -22,9 +23,9 @@ const cardSource = {
     return item;
   },
   endDrag(props, monitor) {
-    console.log(props);
-    console.log(monitor.getItem());
-    console.log(monitor.getDropResult());
+    //console.log(props);
+    //console.log(monitor.getItem());
+    //console.log(monitor.getDropResult());
   }
 };
 
@@ -55,32 +56,12 @@ const fileTarget = {
     const hoverBoundingRect = node.getBoundingClientRect();
 
     // Scroll window if mouse near vertical edge(100px)
-    const windowY = Math.max(
-      document.documentElement.clientHeight,
-      window.innerHeight || 0
-    );
-
-    const mouseY = monitor.getClientOffset().y;
-    if (windowY - mouseY < 100) {
-      window.scroll({
-        top: 100,
-        left: 0,
-        behavior: "smooth"
-      });
-    }
-    if (mouseY < 100) {
-      window.scroll({
-        top: -100,
-        left: 0,
-        behavior: "smooth"
-      });
-    }
 
     // Horizontal Check --
 
     if (
       Math.abs(monitor.getClientOffset().x - hoverBoundingRect.left) >
-      hoverBoundingRect.width / 2
+      hoverBoundingRect.width / 1.8
     )
       return;
 
@@ -112,19 +93,8 @@ function collect(connect, monitor) {
   };
 }
 
-const style = {
-  border: "1px dashed gray",
-  padding: "0.5rem 1rem",
-  marginBottom: ".5rem",
-  backgroundColor: "white",
-  cursor: "move"
-};
-
-const File = React.forwardRef(
-  (
-    { file, group, isDragging, getItem, connectDragSource, connectDropTarget },
-    ref
-  ) => {
+const DragItem = React.forwardRef(
+  ({ file, getItem, connectDragSource, connectDropTarget }, ref) => {
     const elementRef = useRef(null);
     connectDragSource(elementRef);
     connectDropTarget(elementRef);
@@ -133,22 +103,14 @@ const File = React.forwardRef(
       draggedId = getItem.id;
     }
 
-    const opacity = draggedId === file.id ? 0.3 : 1;
-    let backgroundColor = "#dad9f3";
-    if (file.type === "file") backgroundColor = "#f4d6d2";
-
-    if (file.type === "img") backgroundColor = "#d9f3e9";
+    const dragClass = draggedId === file.id ? "draggedItem" : "";
 
     useImperativeHandle(ref, () => ({
       getNode: () => elementRef.current
     }));
     return (
-      <div
-        ref={elementRef}
-        className="card-file"
-        style={Object.assign({}, style, { opacity, backgroundColor })}
-      >
-        <h4>{file.name}</h4>I am a draggable card number {file.id}
+      <div ref={elementRef} className={dragClass}>
+        <Card item={file} dragClass={dragClass} />
       </div>
     );
   }
@@ -161,4 +123,4 @@ export default DropTarget(Types.FILE, fileTarget, (connect, monitor) => ({
   isOverCurrent: monitor.isOver({ shallow: true }),
   canDrop: monitor.canDrop(),
   itemType: monitor.getItemType()
-}))(DragSource(Types.FILE, cardSource, collect)(File));
+}))(DragSource(Types.FILE, cardSource, collect)(DragItem));
